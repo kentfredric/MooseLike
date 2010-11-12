@@ -2,6 +2,7 @@
 
 _use("MooseLike_Types");
 _use("MooseLike_Meta_Object");
+_use("MooseLike_Exceptions");
 
 class MooseLike {
 
@@ -27,7 +28,9 @@ class MooseLike {
     $config = array();
     if( isset( $args[0] ) ){
       if ( !is_array( $args[0] ) ){ 
-        throw new CodeParamException('Invalid construction, syntax is: new ' . $this->_class . '([ $configArray ])');
+        MooseLike_Exceptions::constructor( 
+          'Invalid construction, syntax is: new ' . $this->_class . '([ $configArray ])'
+        );
       }
       $config  = $args[0];
     }
@@ -57,19 +60,20 @@ class MooseLike {
     return array();
   }
   public function __call( string $name , array $arguments ){
+    MooseLike_Exceptions::notimplemented();
     if( ! $this->_meta->has_attribute($name) ){ 
-      throw new CodeMethodException("No attribute '$name', and no method either.");
+      MooseLike_Exceptions::attribute_missing($name);
     }
   }
   public function __get( $name ){ 
     if( ! $this->meta()->has_attribute( $name ) ) { 
-      throw new CodeMethodException("No attribute '$name'");
+      MooseLike_Exceptions::attribute_missing($name);
     }
     return $this->_get( $name );
   }
   public function __set( $name , $value ){ 
     if( ! $this->_meta->has_attribute( $name ) ) { 
-      throw new CodeMethodException("No attribute '$name'");
+      MooseLike_Exceptions::attribute_missing($name);
     }
     return $this->_set( $name, $value );
   }
